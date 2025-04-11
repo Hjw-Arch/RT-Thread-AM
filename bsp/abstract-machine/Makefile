@@ -25,10 +25,10 @@ init: $(RTCONFIG_H)
 	cat $(FILE_TMP) | grep 'gcc ' | head -n 1 | grep -o " -I[^ ]*" | awk '{print "CFLAGS += " $$1}' >> $(FILE_MK)
 	rm $(FILE_TMP)
 
-menuconfig:
-	scons --menuconfig
-	scons --genconfig
-	$(MAKE) init
+# menuconfig:
+# 	scons --menuconfig
+# 	scons --genconfig
+# 	$(MAKE) init
 
 ifneq ($(MAKECMDGOALS),clean)
 update: $(AM_APPS_MK)
