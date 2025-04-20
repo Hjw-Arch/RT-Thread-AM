@@ -235,10 +235,10 @@ void rt_application_init(void)
  *
  * @return Normally never returns. If 0 is returned, the scheduler failed.
  */
+#include <klib.h>
 int rtthread_startup(void)
 {
     rt_hw_interrupt_disable();
-
     /* board level initialization
      * NOTE: please initialize heap inside board initialization.
      */

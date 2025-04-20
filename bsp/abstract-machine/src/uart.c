@@ -36,9 +36,20 @@ static int _uart_putc(struct rt_serial_device *serial, char c) {
   return 1;
 }
 
-static int _uart_getc(struct rt_serial_device *serial) {
-  static const char *p = "help\ndate\nversion\nfree\nps\npwd\nls\nmemtrace\nmemcheck\nutest_list\nam_snake\n";
-  return (*p != '\0' ? *(p ++) : -1);
+#include <klib.h>
+#include <klib-macros.h>
+static int _uart_getc(struct rt_serial_device *serial)
+{
+	static int p_idx = 0;
+	static const char *p = "help\ndate\nversion\nfree\nps\npwd\nls\nmemtrace\nmemcheck\nutest_list\n";
+
+	if (p_idx < 63) {
+		return p[p_idx++];
+	}
+
+	return io_read(AM_UART_RX).data;
+
+	// return (*p != '\0' ? *(p++) : -1);
 }
 
 const struct rt_uart_ops _uart_ops = {
@@ -59,13 +70,11 @@ int rt_hw_uart_init(void) {
   // register device
   serial = &serial0;
   uart = &uart0;
-
   serial->ops = &_uart_ops;
   serial->config = config;
   serial->config.baud_rate = UART_DEFAULT_BAUDRATE;
   uart->hw_base = (rt_ubase_t)uart0_base;
   uart->irqno = 0x0a;
-
   rt_hw_serial_register(serial,
       RT_CONSOLE_DEVICE_NAME,
       RT_DEVICE_FLAG_STREAM | RT_DEVICE_FLAG_RDWR | RT_DEVICE_FLAG_INT_RX,
